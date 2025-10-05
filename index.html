@@ -1,205 +1,221 @@
-import React, { useState, useEffect } from 'react';
-import { Trophy, Star, RefreshCw } from 'lucide-react';
-
-export default function JuegoEnteros() {
-  const [nivel, setNivel] = useState(1);
-  const [puntos, setPuntos] = useState(0);
-  const [problema, setProblema] = useState(null);
-  const [respuesta, setRespuesta] = useState('');
-  const [mensaje, setMensaje] = useState('');
-  const [racha, setRacha] = useState(0);
-  const [totalResueltos, setTotalResueltos] = useState(0);
-
-  const generarProblema = (nivelActual) => {
-    let num1, num2, operacion, respuestaCorrecta, usarParentesis = false;
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maestro de Números Enteros</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <div id="root"></div>
     
-    if (nivelActual === 1) {
-      // Nivel 1: Más variedad - mezcla de positivos y negativos
-      const tipoProblema = Math.floor(Math.random() * 4);
-      
-      if (tipoProblema === 0) {
-        // Positivo + Positivo
-        num1 = Math.floor(Math.random() * 15) + 1;
-        num2 = Math.floor(Math.random() * 15) + 1;
-      } else if (tipoProblema === 1) {
-        // Negativo + Positivo
-        num1 = -(Math.floor(Math.random() * 15) + 1);
-        num2 = Math.floor(Math.random() * 20) + 1;
-      } else if (tipoProblema === 2) {
-        // Positivo - Positivo
-        num1 = Math.floor(Math.random() * 20) + 1;
-        num2 = Math.floor(Math.random() * 15) + 1;
-      } else {
-        // Negativo - Positivo
-        num1 = -(Math.floor(Math.random() * 15) + 1);
-        num2 = Math.floor(Math.random() * 15) + 1;
-      }
-      
-      operacion = tipoProblema < 2 ? '+' : '-';
-      respuestaCorrecta = operacion === '+' ? num1 + num2 : num1 - num2;
-      usarParentesis = false;
-    } else if (nivelActual === 2) {
-      // Nivel 2: Con paréntesis - más variedad
-      num1 = Math.floor(Math.random() * 31) - 15;
-      num2 = Math.floor(Math.random() * 31) - 15;
-      operacion = Math.random() > 0.5 ? '+' : '-';
-      respuestaCorrecta = operacion === '+' ? num1 + num2 : num1 - num2;
-      usarParentesis = num2 < 0;
-    } else {
-      // Nivel 3: Experto - números más grandes
-      num1 = Math.floor(Math.random() * 51) - 25;
-      num2 = Math.floor(Math.random() * 51) - 25;
-      operacion = Math.random() > 0.5 ? '+' : '-';
-      respuestaCorrecta = operacion === '+' ? num1 + num2 : num1 - num2;
-      usarParentesis = num2 < 0;
-    }
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        
+        const Trophy = () => (
+            <svg className="w-8 h-8 mx-auto mb-2 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+            </svg>
+        );
+        
+        const Star = () => (
+            <svg className="w-8 h-8 mx-auto mb-2 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+            </svg>
+        );
+        
+        const RefreshCw = () => (
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+        );
 
-    return { num1, num2, operacion, respuestaCorrecta, usarParentesis };
-  };
+        function JuegoEnteros() {
+          const [nivel, setNivel] = useState(1);
+          const [puntos, setPuntos] = useState(0);
+          const [problema, setProblema] = useState(null);
+          const [respuesta, setRespuesta] = useState('');
+          const [mensaje, setMensaje] = useState('');
+          const [racha, setRacha] = useState(0);
+          const [totalResueltos, setTotalResueltos] = useState(0);
 
-  useEffect(() => {
-    setProblema(generarProblema(nivel));
-  }, [nivel]);
+          const generarProblema = (nivelActual) => {
+            let num1, num2, operacion, respuestaCorrecta, usarParentesis = false;
+            
+            if (nivelActual === 1) {
+              num1 = Math.floor(Math.random() * 21) - 10;
+              num2 = Math.floor(Math.random() * 10) + 1;
+              operacion = '+';
+              respuestaCorrecta = num1 + num2;
+              usarParentesis = false;
+            } else if (nivelActual === 2) {
+              num1 = Math.floor(Math.random() * 21) - 10;
+              num2 = Math.floor(Math.random() * 21) - 10;
+              operacion = Math.random() > 0.5 ? '+' : '-';
+              respuestaCorrecta = operacion === '+' ? num1 + num2 : num1 - num2;
+              usarParentesis = num2 < 0;
+            } else {
+              num1 = Math.floor(Math.random() * 51) - 25;
+              num2 = Math.floor(Math.random() * 51) - 25;
+              operacion = Math.random() > 0.5 ? '+' : '-';
+              respuestaCorrecta = operacion === '+' ? num1 + num2 : num1 - num2;
+              usarParentesis = num2 < 0;
+            }
 
-  const verificarRespuesta = () => {
-    if (respuesta === '') return;
-    
-    const respNum = parseInt(respuesta);
-    if (respNum === problema.respuestaCorrecta) {
-      setPuntos(puntos + (10 * nivel));
-      setRacha(racha + 1);
-      setMensaje('¡Correcto! 🎉');
-      setTotalResueltos(totalResueltos + 1);
-      
-      const ejerciciosNecesarios = 30;
-      const ejerciciosEnNivel = nivel === 1 ? (totalResueltos + 1) : nivel === 2 ? (totalResueltos + 1 - 30) : (totalResueltos + 1 - 60);
-      
-      if (ejerciciosEnNivel === ejerciciosNecesarios && nivel < 3) {
-        setNivel(nivel + 1);
-        setMensaje('¡Correcto! ¡Subiste de nivel! 🚀');
-      }
-      
-      setTimeout(() => {
-        const nuevoNivel = ejerciciosEnNivel === ejerciciosNecesarios && nivel < 3 ? nivel + 1 : nivel;
-        setProblema(generarProblema(nuevoNivel));
-        setRespuesta('');
-        setMensaje('');
-      }, 1500);
-    } else {
-      setMensaje(`Incorrecto. La respuesta es ${problema.respuestaCorrecta}`);
-      setRacha(0);
-      setTimeout(() => {
-        setProblema(generarProblema(nivel));
-        setRespuesta('');
-        setMensaje('');
-      }, 2500);
-    }
-  };
+            return { num1, num2, operacion, respuestaCorrecta, usarParentesis };
+          };
 
-  const reiniciar = () => {
-    setNivel(1);
-    setPuntos(0);
-    setRacha(0);
-    setTotalResueltos(0);
-    setProblema(generarProblema(1));
-    setRespuesta('');
-    setMensaje('');
-  };
+          useEffect(() => {
+            setProblema(generarProblema(nivel));
+          }, [nivel]);
 
-  if (!problema) return null;
+          const verificarRespuesta = () => {
+            if (respuesta === '') return;
+            
+            const respNum = parseInt(respuesta);
+            if (respNum === problema.respuestaCorrecta) {
+              setPuntos(puntos + (10 * nivel));
+              setRacha(racha + 1);
+              setMensaje('¡Correcto! 🎉');
+              setTotalResueltos(totalResueltos + 1);
+              
+              const ejerciciosNecesarios = 30;
+              const ejerciciosEnNivel = nivel === 1 ? (totalResueltos + 1) : nivel === 2 ? (totalResueltos + 1 - 30) : (totalResueltos + 1 - 60);
+              
+              if (ejerciciosEnNivel === ejerciciosNecesarios && nivel < 3) {
+                setNivel(nivel + 1);
+                setMensaje('¡Correcto! ¡Subiste de nivel! 🚀');
+              }
+              
+              setTimeout(() => {
+                const nuevoNivel = ejerciciosEnNivel === ejerciciosNecesarios && nivel < 3 ? nivel + 1 : nivel;
+                setProblema(generarProblema(nuevoNivel));
+                setRespuesta('');
+                setMensaje('');
+              }, 1500);
+            } else {
+              setMensaje(`Incorrecto. La respuesta es ${problema.respuestaCorrecta}`);
+              setRacha(0);
+              setTimeout(() => {
+                setProblema(generarProblema(nivel));
+                setRespuesta('');
+                setMensaje('');
+              }, 2500);
+            }
+          };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 p-8">
-      <div className="max-w-2xl mx-auto">
-        <div className="bg-white rounded-3xl shadow-2xl p-8">
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 mb-2">
-              Maestro de Números Enteros
-            </h1>
-            <p className="text-gray-600">¡Practica suma y resta de enteros!</p>
-          </div>
+          const reiniciar = () => {
+            setNivel(1);
+            setPuntos(0);
+            setRacha(0);
+            setTotalResueltos(0);
+            setProblema(generarProblema(1));
+            setRespuesta('');
+            setMensaje('');
+          };
 
-          <div className="grid grid-cols-3 gap-4 mb-8">
-            <div className="bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-xl p-4 text-center">
-              <Trophy className="w-8 h-8 mx-auto mb-2 text-yellow-600" />
-              <div className="text-2xl font-bold text-yellow-800">{puntos}</div>
-              <div className="text-xs text-yellow-700">Puntos</div>
-            </div>
-            <div className="bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl p-4 text-center">
-              <Star className="w-8 h-8 mx-auto mb-2 text-blue-600" />
-              <div className="text-2xl font-bold text-blue-800">Nivel {nivel}</div>
-              <div className="text-xs text-blue-700">{nivel === 1 ? 'Sin paréntesis' : nivel === 2 ? 'Con paréntesis' : 'Experto'}</div>
-            </div>
-            <div className="bg-gradient-to-br from-green-100 to-green-200 rounded-xl p-4 text-center">
-              <div className="text-2xl font-bold text-green-800">{racha}</div>
-              <div className="text-xs text-green-700">Racha</div>
-            </div>
-          </div>
+          if (!problema) return null;
 
-          <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-8 mb-6">
-            <div className="text-center mb-6">
-              <div className="text-6xl font-bold text-purple-800 mb-4">
-                {problema.num1} {problema.operacion} {problema.usarParentesis ? `(${problema.num2})` : problema.num2} = ?
+          return (
+            <div className="min-h-screen bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 p-8">
+              <div className="max-w-2xl mx-auto">
+                <div className="bg-white rounded-3xl shadow-2xl p-8">
+                  <div className="text-center mb-8">
+                    <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 mb-2">
+                      Maestro de Números Enteros
+                    </h1>
+                    <p className="text-gray-600">¡Practica suma y resta de enteros!</p>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-4 mb-8">
+                    <div className="bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-xl p-4 text-center">
+                      <Trophy />
+                      <div className="text-2xl font-bold text-yellow-800">{puntos}</div>
+                      <div className="text-xs text-yellow-700">Puntos</div>
+                    </div>
+                    <div className="bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl p-4 text-center">
+                      <Star />
+                      <div className="text-2xl font-bold text-blue-800">Nivel {nivel}</div>
+                      <div className="text-xs text-blue-700">{nivel === 1 ? 'Sin paréntesis' : nivel === 2 ? 'Con paréntesis' : 'Experto'}</div>
+                    </div>
+                    <div className="bg-gradient-to-br from-green-100 to-green-200 rounded-xl p-4 text-center">
+                      <div className="text-2xl font-bold text-green-800">{racha}</div>
+                      <div className="text-xs text-green-700">Racha</div>
+                    </div>
+                  </div>
+
+                  <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-8 mb-6">
+                    <div className="text-center mb-6">
+                      <div className="text-6xl font-bold text-purple-800 mb-4">
+                        {problema.num1} {problema.operacion} {problema.usarParentesis ? `(${problema.num2})` : problema.num2} = ?
+                      </div>
+                    </div>
+
+                    <div className="flex gap-4">
+                      <input
+                        type="number"
+                        value={respuesta}
+                        onChange={(e) => setRespuesta(e.target.value)}
+                        onKeyPress={(e) => e.key === 'Enter' && verificarRespuesta()}
+                        placeholder="Tu respuesta"
+                        className="flex-1 text-3xl text-center border-4 border-purple-300 rounded-xl p-4 focus:outline-none focus:border-purple-500"
+                        autoFocus
+                      />
+                      <button
+                        onClick={verificarRespuesta}
+                        className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 rounded-xl font-bold text-xl hover:from-purple-700 hover:to-pink-700 transition-all transform hover:scale-105"
+                      >
+                        Verificar
+                      </button>
+                    </div>
+
+                    {mensaje && (
+                      <div className={`mt-4 text-center text-xl font-bold ${mensaje.includes('Correcto') ? 'text-green-600' : 'text-red-600'}`}>
+                        {mensaje}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="bg-gray-50 rounded-xl p-4 mb-4">
+                    <h3 className="font-bold text-gray-800 mb-2">💡 Recordatorio:</h3>
+                    {nivel === 1 ? (
+                      <ul className="text-sm text-gray-700 space-y-1">
+                        <li>• 5 + 3 = 8</li>
+                        <li>• -5 + 8 = 3</li>
+                        <li>• -8 + 4 = -4</li>
+                        <li>• 8 - 3 = 5</li>
+                        <li>• 5 - 7 = -2</li>
+                        <li>• -5 - 3 = -8</li>
+                      </ul>
+                    ) : (
+                      <ul className="text-sm text-gray-700 space-y-1">
+                        <li>• 5 + (-3) = 2</li>
+                        <li>• 8 + (-5) = 3</li>
+                        <li>• 5 - (-3) = 8</li>
+                        <li>• 7 - (-2) = 9</li>
+                        <li>• -5 + (-3) = -8</li>
+                        <li>• -5 - (-3) = -2</li>
+                      </ul>
+                    )}
+                  </div>
+
+                  <button
+                    onClick={reiniciar}
+                    className="w-full bg-gray-200 text-gray-700 py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-gray-300 transition"
+                  >
+                    <RefreshCw />
+                    Reiniciar Juego
+                  </button>
+                </div>
               </div>
             </div>
+          );
+        }
 
-            <div className="flex gap-4">
-              <input
-                type="number"
-                value={respuesta}
-                onChange={(e) => setRespuesta(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && verificarRespuesta()}
-                placeholder="Tu respuesta"
-                className="flex-1 text-3xl text-center border-4 border-purple-300 rounded-xl p-4 focus:outline-none focus:border-purple-500"
-                autoFocus
-              />
-              <button
-                onClick={verificarRespuesta}
-                className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 rounded-xl font-bold text-xl hover:from-purple-700 hover:to-pink-700 transition-all transform hover:scale-105"
-              >
-                Verificar
-              </button>
-            </div>
-
-            {mensaje && (
-              <div className={`mt-4 text-center text-xl font-bold ${mensaje.includes('Correcto') ? 'text-green-600' : 'text-red-600'}`}>
-                {mensaje}
-              </div>
-            )}
-          </div>
-
-          <div className="bg-gray-50 rounded-xl p-4 mb-4">
-            <h3 className="font-bold text-gray-800 mb-2">💡 Recordatorio:</h3>
-            {nivel === 1 ? (
-              <ul className="text-sm text-gray-700 space-y-1">
-                <li>• 5 + 3 = 8</li>
-                <li>• -5 + 8 = 3</li>
-                <li>• -8 + 4 = -4</li>
-                <li>• 8 - 3 = 5</li>
-                <li>• 5 - 7 = -2</li>
-                <li>• -5 - 3 = -8</li>
-              </ul>
-            ) : (
-              <ul className="text-sm text-gray-700 space-y-1">
-                <li>• 5 + (-3) = 2</li>
-                <li>• 8 + (-5) = 3</li>
-                <li>• 5 - (-3) = 8</li>
-                <li>• 7 - (-2) = 9</li>
-                <li>• -5 + (-3) = -8</li>
-                <li>• -5 - (-3) = -2</li>
-              </ul>
-            )}
-          </div>
-
-          <button
-            onClick={reiniciar}
-            className="w-full bg-gray-200 text-gray-700 py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-gray-300 transition"
-          >
-            <RefreshCw className="w-5 h-5" />
-            Reiniciar Juego
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
+        ReactDOM.render(<JuegoEnteros />, document.getElementById('root'));
+    </script>
+</body>
+</html>
